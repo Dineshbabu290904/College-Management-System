@@ -69,6 +69,6 @@ branchSchema.index({ department: 1, isActive: 1 });
 
 branchSchema.plugin(mongoosePaginate);
 
-const Branch = mongoose.model("Branch", branchSchema);
+const BranchV2 = mongoose.model("BranchV2", branchSchema);
 
-module.exports = Branch;
+module.exports = BranchV2;

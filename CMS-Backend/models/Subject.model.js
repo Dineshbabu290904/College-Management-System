@@ -117,6 +117,6 @@ subjectSchema.index({ faculty: 1 });
 
 subjectSchema.plugin(mongoosePaginate);
 
-const Subject = mongoose.model("Subject", subjectSchema);
+const SubjectV2 = mongoose.model("SubjectV2", subjectSchema);
 
-module.exports = Subject;
+module.exports = SubjectV2;

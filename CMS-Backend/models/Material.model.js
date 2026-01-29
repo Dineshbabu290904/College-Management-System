@@ -129,6 +129,6 @@ materialSchema.methods.recordDownload = async function (userId) {
 
 materialSchema.plugin(mongoosePaginate);
 
-const Material = mongoose.model("Material", materialSchema);
+const MaterialV2 = mongoose.model("MaterialV2", materialSchema);
 
-module.exports = Material;
+module.exports = MaterialV2;

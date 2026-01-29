@@ -138,6 +138,6 @@ noticeSchema.statics.getActiveNotices = async function (filters = {}) {
 
 noticeSchema.plugin(mongoosePaginate);
 
-const Notice = mongoose.model("Notice", noticeSchema);
+const NoticeV2 = mongoose.model("NoticeV2", noticeSchema);
 
-module.exports = Notice;
+module.exports = NoticeV2;

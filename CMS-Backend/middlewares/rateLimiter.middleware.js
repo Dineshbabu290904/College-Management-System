@@ -11,9 +11,7 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    return req.user?.id || req.ip;
-  },
+  validate: { xForwardedForHeader: false },
 });
 
 // Strict rate limiter for auth endpoints
@@ -26,7 +24,8 @@ const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: true, // Don't count successful logins
+  skipSuccessfulRequests: true,
+  validate: { xForwardedForHeader: false },
 });
 
 // Password reset limiter
@@ -39,6 +38,7 @@ const passwordResetLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 // File upload limiter
@@ -51,6 +51,7 @@ const uploadLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 // Email sending limiter
@@ -63,6 +64,7 @@ const emailLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 module.exports = {

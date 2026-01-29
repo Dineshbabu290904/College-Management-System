@@ -136,6 +136,6 @@ timetableSchema.statics.getFacultyTimetable = async function (facultyId, academi
 
 timetableSchema.plugin(mongoosePaginate);
 
-const Timetable = mongoose.model("Timetable", timetableSchema);
+const TimetableV2 = mongoose.model("TimetableV2", timetableSchema);
 
-module.exports = Timetable;
+module.exports = TimetableV2;

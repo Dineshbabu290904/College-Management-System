@@ -1,12 +1,12 @@
 // User & Authentication
 const User = require("./User.model");
 
-// Academic
-const Subject = require("./Subject.model");
+// Academic (V2 versions to avoid conflicts with legacy models)
+const SubjectV2 = require("./Subject.model");
 const Course = require("./Course.model");
-const Branch = require("./Branch.model");
+const BranchV2 = require("./Branch.model");
 const Department = require("./Department.model");
-const Timetable = require("./Timetable.model");
+const TimetableV2 = require("./Timetable.model");
 
 // Attendance & Assignments
 const Attendance = require("./Attendance.model");
@@ -21,9 +21,9 @@ const { FeeStructure, FeePayment } = require("./Fee.model");
 // Leave Management
 const Leave = require("./Leave.model");
 
-// Materials & Notices
-const Material = require("./Material.model");
-const Notice = require("./Notice.model");
+// Materials & Notices (V2 versions)
+const MaterialV2 = require("./Material.model");
+const NoticeV2 = require("./Notice.model");
 
 // Library
 const { Book, BookIssue, BookRequest } = require("./Library.model");
@@ -36,12 +36,15 @@ module.exports = {
   // User
   User,
 
-  // Academic
-  Subject,
+  // Academic (V2)
+  Subject: SubjectV2,
+  SubjectV2,
   Course,
-  Branch,
+  Branch: BranchV2,
+  BranchV2,
   Department,
-  Timetable,
+  Timetable: TimetableV2,
+  TimetableV2,
 
   // Attendance & Assignments
   Attendance,
@@ -58,9 +61,11 @@ module.exports = {
   // Leave
   Leave,
 
-  // Materials & Notices
-  Material,
-  Notice,
+  // Materials & Notices (V2)
+  Material: MaterialV2,
+  MaterialV2,
+  Notice: NoticeV2,
+  NoticeV2,
 
   // Library
   Book,
