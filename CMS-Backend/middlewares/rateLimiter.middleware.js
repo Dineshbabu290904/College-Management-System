@@ -11,7 +11,7 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  validate: { xForwardedForHeader: false },
+  validate: false, // Disable all validation to avoid IPv6 issues
 });
 
 // Strict rate limiter for auth endpoints
@@ -25,7 +25,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
-  validate: { xForwardedForHeader: false },
+  validate: false,
 });
 
 // Password reset limiter
@@ -38,7 +38,7 @@ const passwordResetLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  validate: { xForwardedForHeader: false },
+  validate: false,
 });
 
 // File upload limiter
@@ -51,7 +51,7 @@ const uploadLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  validate: { xForwardedForHeader: false },
+  validate: false,
 });
 
 // Email sending limiter
@@ -64,7 +64,7 @@ const emailLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  validate: { xForwardedForHeader: false },
+  validate: false,
 });
 
 module.exports = {

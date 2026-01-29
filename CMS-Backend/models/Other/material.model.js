@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Material = new mongoose.Schema({
+const materialSchema = new mongoose.Schema({
   faculty: {
     type: String,
     required: true,
@@ -19,4 +19,5 @@ const Material = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Material", Material);
+// Check if model exists before creating to avoid OverwriteModelError
+module.exports = mongoose.models.Material || mongoose.model("Material", materialSchema);

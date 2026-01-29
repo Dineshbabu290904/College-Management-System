@@ -138,6 +138,7 @@ noticeSchema.statics.getActiveNotices = async function (filters = {}) {
 
 noticeSchema.plugin(mongoosePaginate);
 
-const NoticeV2 = mongoose.model("NoticeV2", noticeSchema);
+// Check if model exists before creating to avoid OverwriteModelError
+const NoticeV2 = mongoose.models.NoticeV2 || mongoose.model("NoticeV2", noticeSchema);
 
 module.exports = NoticeV2;

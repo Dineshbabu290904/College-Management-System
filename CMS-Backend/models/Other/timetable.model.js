@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const TimeTable = new mongoose.Schema({
+const timetableSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
@@ -15,4 +15,5 @@ const TimeTable = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Timetable", TimeTable);
+// Check if model exists before creating to avoid OverwriteModelError
+module.exports = mongoose.models.Timetable || mongoose.model("Timetable", timetableSchema);

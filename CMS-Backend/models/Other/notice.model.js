@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Notice = new mongoose.Schema({
+const noticeSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -17,4 +17,5 @@ const Notice = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Notice", Notice);
+// Check if model exists before creating to avoid OverwriteModelError
+module.exports = mongoose.models.Notice || mongoose.model("Notice", noticeSchema);

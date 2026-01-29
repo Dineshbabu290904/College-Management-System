@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Subject = new mongoose.Schema({
+const subjectSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -11,4 +11,5 @@ const Subject = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Subject", Subject);
+// Check if model exists before creating to avoid OverwriteModelError
+module.exports = mongoose.models.Subject || mongoose.model("Subject", subjectSchema);
