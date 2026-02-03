@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "seed": "node admin-seeder.js",
+    "seed": "node seeders/adminSeeder.js",
+    "seed:admin": "node seeders/adminSeeder.js",
     "test": "jest"
   },
   "author": "Dinesh Babu Surapaneni",
