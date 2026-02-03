@@ -18,23 +18,37 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await authAPI.login({ email, password });
-          const { user, accessToken, refreshToken } = response.data.data;
+
+          // Handle different response structures
+          const data = response.data?.data || response.data;
+          const { user, accessToken, refreshToken } = data;
+
+          if (!user || !accessToken) {
+            throw new Error("Invalid response from server");
+          }
 
           // Store tokens
           localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
+          if (refreshToken) {
+            localStorage.setItem("refreshToken", refreshToken);
+          }
 
           set({
             user,
             accessToken,
-            refreshToken,
+            refreshToken: refreshToken || null,
             isAuthenticated: true,
             isLoading: false,
+            error: null,
           });
 
           return { success: true, user };
         } catch (error) {
-          const message = error.response?.data?.message || "Login failed";
+          const message =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "Login failed. Please check your credentials.";
           set({ error: message, isLoading: false });
           return { success: false, error: message };
         }
@@ -44,43 +58,61 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await authAPI.register(userData);
-          const { user, accessToken, refreshToken } = response.data.data;
+          const data = response.data?.data || response.data;
+          const { user, accessToken, refreshToken } = data;
+
+          if (!user || !accessToken) {
+            throw new Error("Invalid response from server");
+          }
 
           localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
+          if (refreshToken) {
+            localStorage.setItem("refreshToken", refreshToken);
+          }
 
           set({
             user,
             accessToken,
-            refreshToken,
+            refreshToken: refreshToken || null,
             isAuthenticated: true,
             isLoading: false,
+            error: null,
           });
 
           return { success: true, user };
         } catch (error) {
-          const message = error.response?.data?.message || "Registration failed";
+          const message =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "Registration failed";
           set({ error: message, isLoading: false });
           return { success: false, error: message };
         }
       },
 
       logout: async () => {
+        const refreshToken = get().refreshToken;
+
         try {
-          const refreshToken = get().refreshToken;
           if (refreshToken) {
             await authAPI.logout(refreshToken);
           }
         } catch (error) {
-          console.error("Logout error:", error);
+          console.error("Logout API error:", error);
         } finally {
+          // Clear local storage
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
+          localStorage.removeItem("auth-storage");
+
+          // Reset state
           set({
             user: null,
             accessToken: null,
             refreshToken: null,
             isAuthenticated: false,
+            error: null,
           });
         }
       },
@@ -88,27 +120,37 @@ const useAuthStore = create(
       fetchUser: async () => {
         const accessToken = localStorage.getItem("accessToken");
         if (!accessToken) {
-          set({ isAuthenticated: false });
+          set({ isAuthenticated: false, user: null });
           return;
         }
 
         try {
           // Check if token is expired
           const decoded = jwtDecode(accessToken);
-          if (decoded.exp * 1000 < Date.now()) {
+          const isExpired = decoded.exp * 1000 < Date.now();
+
+          if (isExpired) {
             // Token expired, try to refresh
-            await get().refreshAccessToken();
-            return;
+            const refreshed = await get().refreshAccessToken();
+            if (!refreshed) {
+              return;
+            }
           }
 
           const response = await authAPI.getMe();
+          const user = response.data?.data || response.data;
+
           set({
-            user: response.data.data,
+            user,
+            accessToken,
             isAuthenticated: true,
           });
         } catch (error) {
           console.error("Fetch user error:", error);
-          get().logout();
+          // Only logout if it's an auth error
+          if (error.response?.status === 401 || error.response?.status === 403) {
+            get().logout();
+          }
         }
       },
 
@@ -121,18 +163,22 @@ const useAuthStore = create(
 
         try {
           const response = await authAPI.refreshToken(refreshToken);
-          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+          const data = response.data?.data || response.data;
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data;
 
           localStorage.setItem("accessToken", newAccessToken);
-          localStorage.setItem("refreshToken", newRefreshToken);
+          if (newRefreshToken) {
+            localStorage.setItem("refreshToken", newRefreshToken);
+          }
 
           set({
             accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
+            refreshToken: newRefreshToken || refreshToken,
           });
 
           return true;
         } catch (error) {
+          console.error("Token refresh failed:", error);
           get().logout();
           return false;
         }
@@ -145,11 +191,15 @@ const useAuthStore = create(
       },
 
       clearError: () => set({ error: null }),
+
+      setError: (error) => set({ error }),
     }),
     {
       name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     }
