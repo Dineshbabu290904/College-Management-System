@@ -136,7 +136,7 @@ const App = () => {
               />
 
               {/* Legacy Routes (backward compatibility) */}
-              <Route path="/" element={<LegacyLogin />} />
+              <Route path="/" element={<Login />} />
               <Route path="/legacy/student" element={<LegacyStudentHome />} />
               <Route path="/legacy/faculty" element={<LegacyFacultyHome />} />
               <Route path="/legacy/admin" element={<LegacyAdminHome />} />
