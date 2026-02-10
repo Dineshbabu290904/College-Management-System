@@ -100,9 +100,8 @@ courseSchema.index({ department: 1, semester: 1 });
 courseSchema.index({ type: 1, isActive: 1 });
 
 // Calculate total hours before saving
-courseSchema.pre("save", function (next) {
+courseSchema.pre("save", function () {
   this.totalHours = this.lectureHours + this.tutorialHours + this.practicalHours;
-  next();
 });
 
 courseSchema.plugin(mongoosePaginate);

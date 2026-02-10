@@ -98,7 +98,7 @@ const leaveSchema = new mongoose.Schema(
 );
 
 // Calculate total days before saving
-leaveSchema.pre("save", function (next) {
+leaveSchema.pre("save", function () {
   if (this.isHalfDay) {
     this.totalDays = 0.5;
   } else {
@@ -107,7 +107,6 @@ leaveSchema.pre("save", function (next) {
     const diffTime = Math.abs(end - start);
     this.totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   }
-  next();
 });
 
 // Indexes

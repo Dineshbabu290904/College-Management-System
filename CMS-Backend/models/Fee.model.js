@@ -153,7 +153,7 @@ feePaymentSchema.index({ status: 1 });
 feePaymentSchema.index({ receiptNumber: 1 });
 
 // Calculate due amount before saving
-feePaymentSchema.pre("save", function (next) {
+feePaymentSchema.pre("save", function () {
   this.totalAmount = this.amount + this.lateFee - this.discount - this.scholarship;
   this.dueAmount = this.totalAmount - this.paidAmount;
 
@@ -163,12 +163,10 @@ feePaymentSchema.pre("save", function (next) {
   } else if (this.paidAmount > 0) {
     this.status = "partial";
   }
-
-  next();
 });
 
 // Generate receipt number
-feePaymentSchema.pre("save", async function (next) {
+feePaymentSchema.pre("save", async function () {
   if (this.isNew && this.status === "paid") {
     const year = new Date().getFullYear();
     const count = await this.constructor.countDocuments({
@@ -176,7 +174,6 @@ feePaymentSchema.pre("save", async function (next) {
     });
     this.receiptNumber = `RCP${year}${String(count + 1).padStart(6, "0")}`;
   }
-  next();
 });
 
 // Static method to get student fee summary

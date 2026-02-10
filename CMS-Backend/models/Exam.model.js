@@ -170,7 +170,7 @@ examResultSchema.index({ exam: 1, student: 1 }, { unique: true });
 examResultSchema.index({ student: 1, status: 1 });
 
 // Calculate grade based on marks
-examResultSchema.pre("save", function (next) {
+examResultSchema.pre("save", function () {
   if (this.marksObtained !== undefined && !this.isAbsent) {
     const percentage = (this.marksObtained / this.maxMarks) * 100;
 
@@ -203,7 +203,6 @@ examResultSchema.pre("save", function (next) {
     this.grade = "AB";
     this.gradePoints = 0;
   }
-  next();
 });
 
 examSchema.plugin(mongoosePaginate);

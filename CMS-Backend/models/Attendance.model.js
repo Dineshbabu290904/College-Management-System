@@ -80,10 +80,9 @@ attendanceSchema.index({ branch: 1, semester: 1, date: 1 });
 attendanceSchema.index({ "records.student": 1, date: 1 });
 
 // Calculate totals before saving
-attendanceSchema.pre("save", function (next) {
+attendanceSchema.pre("save", function () {
   this.totalPresent = this.records.filter(r => r.status === "present" || r.status === "late").length;
   this.totalAbsent = this.records.filter(r => r.status === "absent").length;
-  next();
 });
 
 // Static method to get student attendance summary
