@@ -196,7 +196,7 @@ bookIssueSchema.index({ dueDate: 1, status: 1 });
 bookRequestSchema.index({ requestedBy: 1, status: 1 });
 
 // Update book status based on availability
-bookSchema.pre("save", function (next) {
+bookSchema.pre("save", function () {
   if (this.availableCopies === 0) {
     this.status = "out_of_stock";
   } else if (this.availableCopies <= 2) {
@@ -204,7 +204,6 @@ bookSchema.pre("save", function (next) {
   } else {
     this.status = "available";
   }
-  next();
 });
 
 // Calculate fine for overdue books
