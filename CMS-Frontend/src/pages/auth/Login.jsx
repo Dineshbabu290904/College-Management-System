@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -7,10 +7,24 @@ import toast from 'react-hot-toast'
 import { Button, Input, Card, CardContent } from '@/components/ui'
 import useAuthStore from '@/store/authStore'
 
+// Helper function to get dashboard route based on role
+function getDashboardRoute(role) {
+  switch (role) {
+    case 'student':
+      return '/student'
+    case 'faculty':
+      return '/faculty'
+    case 'admin':
+    case 'superadmin':
+      return '/admin'
+    default:
+      return '/login'
+  }
+}
+
 export default function Login() {
   const navigate = useNavigate()
-  const { login, isLoading } = useAuthStore()
-  const [showPassword, setShowPassword] = useState(false)
+  const { login, isLoading, isAuthenticated, user } = useAuthStore()
 
   const {
     register,
@@ -23,12 +37,19 @@ export default function Login() {
     },
   })
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(getDashboardRoute(user.role), { replace: true })
+    }
+  }, [isAuthenticated, user, navigate])
+
   const onSubmit = async (data) => {
     const result = await login(data.email, data.password)
 
     if (result.success) {
       toast.success('Welcome back!')
-      navigate('/dashboard')
+      navigate(getDashboardRoute(result.user?.role), { replace: true })
     } else {
       toast.error(result.error || 'Login failed')
     }
@@ -48,7 +69,7 @@ export default function Login() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 shadow-lg shadow-primary-500/30 mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/30 mb-4"
           >
             <GraduationCap className="w-8 h-8 text-white" />
           </motion.div>
@@ -94,13 +115,13 @@ export default function Login() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-sm text-slate-600">Remember me</span>
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Forgot password?
                 </Link>
@@ -121,7 +142,7 @@ export default function Login() {
                 Don't have an account?{' '}
                 <Link
                   to="/register"
-                  className="text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Create account
                 </Link>

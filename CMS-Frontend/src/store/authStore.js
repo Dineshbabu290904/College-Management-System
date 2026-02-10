@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { authService } from '@/services/auth.service'
+import api, { authAPI } from '@/services/api'
 
 const useAuthStore = create(
   persist(
@@ -13,9 +13,14 @@ const useAuthStore = create(
       login: async (email, password) => {
         set({ isLoading: true, error: null })
         try {
-          const { user } = await authService.login(email, password)
+          const response = await authAPI.login({ email, password })
+          const { accessToken, refreshToken, user } = response.data
+
+          localStorage.setItem('accessToken', accessToken)
+          localStorage.setItem('refreshToken', refreshToken)
+
           set({ user, isAuthenticated: true, isLoading: false })
-          return { success: true }
+          return { success: true, user }
         } catch (error) {
           const message = error.response?.data?.message || 'Login failed'
           set({ error: message, isLoading: false })
@@ -26,18 +31,30 @@ const useAuthStore = create(
       logout: async () => {
         set({ isLoading: true })
         try {
-          await authService.logout()
+          await authAPI.logout()
+        } catch (error) {
+          console.error('Logout error:', error)
         } finally {
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
           set({ user: null, isAuthenticated: false, isLoading: false, error: null })
         }
       },
 
-      fetchProfile: async () => {
+      fetchUser: async () => {
+        const token = localStorage.getItem('accessToken')
+        if (!token) {
+          set({ user: null, isAuthenticated: false })
+          return
+        }
+
         set({ isLoading: true })
         try {
-          const { user } = await authService.getProfile()
-          set({ user, isAuthenticated: true, isLoading: false })
+          const response = await authAPI.getProfile()
+          set({ user: response.data.user, isAuthenticated: true, isLoading: false })
         } catch (error) {
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
           set({ user: null, isAuthenticated: false, isLoading: false })
         }
       },

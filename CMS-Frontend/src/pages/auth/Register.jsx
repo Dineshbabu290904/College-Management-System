@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Mail, Lock, User, GraduationCap, Phone } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Button, Input, Card, CardContent } from '@/components/ui'
-import { authService } from '@/services/auth.service'
+import { authAPI } from '@/services/api'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ export default function Register() {
   const onSubmit = async (data) => {
     setIsLoading(true)
     try {
-      await authService.register({
+      await authAPI.register({
         ...data,
         role: 'student', // Default role
       })
@@ -59,7 +59,7 @@ export default function Register() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 shadow-lg shadow-primary-500/30 mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-500/30 mb-4"
           >
             <GraduationCap className="w-8 h-8 text-white" />
           </motion.div>
@@ -163,7 +163,7 @@ export default function Register() {
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Sign in
                 </Link>
